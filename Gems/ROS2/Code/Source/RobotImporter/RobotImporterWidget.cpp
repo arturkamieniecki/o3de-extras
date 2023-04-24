@@ -355,6 +355,9 @@ namespace ROS2
         m_prefabMaker = AZStd::make_unique<URDFPrefabMaker>(
             m_urdfPath.String(), m_parsedUrdf, prefabPath.String(), m_urdfAssetsMapping, useArticulation);
 
+
+        aaaaaaaaaaaaaaaaaaa
+
         auto prefabOutcome = m_prefabMaker->CreatePrefabFromURDF();
         if (prefabOutcome.IsSuccess())
         {
