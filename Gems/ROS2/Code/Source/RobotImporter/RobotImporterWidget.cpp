@@ -6,17 +6,17 @@
  *
  */
 
-#include <AzCore/IO/FileIO.h>
-#include <AzCore/IO/Path/Path.h>
-#include <AzCore/Utils/Utils.h>
-
 #include "RobotImporterWidget.h"
 #include "URDF/URDFPrefabMaker.h"
 #include "URDF/UrdfParser.h"
 #include "Utils/RobotImporterUtils.h"
+#include <AzCore/IO/FileIO.h>
+#include <AzCore/IO/Path/Path.h>
+#include <AzCore/Utils/Utils.h>
 #include <QApplication>
 #include <QScreen>
 #include <QTranslator>
+#include <qwizard.h>
 
 namespace ROS2
 {
@@ -177,6 +177,7 @@ namespace ROS2
     {
         if (m_parsedUrdf && m_assetPage->IsEmpty())
         {
+            std::cout << "dzialam" << std::endl;
             auto collidersNames = Utils::GetMeshesFilenames(m_parsedUrdf->getRoot(), false, true);
             auto visualNames = Utils::GetMeshesFilenames(m_parsedUrdf->getRoot(), true, false);
 
@@ -246,6 +247,7 @@ namespace ROS2
                 };
             }
             m_assetPage->StartWatchAsset();
+            QWizard::button(QWizard::NextButton)->click();
         }
     }
 
@@ -257,6 +259,7 @@ namespace ROS2
             m_prefabMakerPage->setProposedPrefabName(robotName);
             QWizard::button(PrefabCreationButtonId)->setText(tr("Create Prefab"));
             QWizard::setOption(HavePrefabCreationButton, true);
+            QWizard::button(PrefabCreationButtonId)->click();
         }
     }
 
@@ -375,6 +378,7 @@ namespace ROS2
     void RobotImporterWidget::onCreateButtonPressed()
     {
         CreatePrefab(m_prefabMakerPage->getPrefabName());
+        // RobotImporterAPI::generatePrefabFromFile(m_urdfPath, false, false);
     }
 
     bool RobotImporterWidget::CheckCyclicalDependency(AZ::IO::Path importedPrefabPath)
