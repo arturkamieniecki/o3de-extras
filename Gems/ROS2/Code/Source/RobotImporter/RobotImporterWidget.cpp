@@ -246,6 +246,7 @@ namespace ROS2
                 };
             }
             m_assetPage->StartWatchAsset();
+            sleep(1);
             QWizard::button(QWizard::NextButton)->click();
         }
     }
@@ -332,27 +333,27 @@ namespace ROS2
     {
         const AZ::IO::Path prefabPathRealative(AZ::IO::Path("Assets") / "Importer" / prefabName);
         const AZ::IO::Path prefabPath(AZ::IO::Path(AZ::Utils::GetProjectPath()) / prefabPathRealative);
-        bool fileExists = AZ::IO::FileIOBase::GetInstance()->Exists(prefabPath.c_str());
+        //bool fileExists = AZ::IO::FileIOBase::GetInstance()->Exists(prefabPath.c_str());
 
         if (CheckCyclicalDependency(prefabPathRealative))
         {
             m_prefabMakerPage->setSuccess(false);
             return;
         }
-        if (fileExists)
-        {
-            QMessageBox msgBox;
-            msgBox.setText(tr("Prefab with this name already exists"));
-            msgBox.setInformativeText(tr("Do you want to overwrite existing prefab?"));
-            msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-            msgBox.setDefaultButton(QMessageBox::Cancel);
-            int ret = msgBox.exec();
-            if (ret == QMessageBox::Cancel)
-            {
-                m_prefabMakerPage->setSuccess(false);
-                return;
-            }
-        }
+//        if (fileExists)
+//        {
+//            QMessageBox msgBox;
+//            msgBox.setText(tr("Prefab with this name already exists"));
+//            msgBox.setInformativeText(tr("Do you want to overwrite existing prefab?"));
+//            msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+//            msgBox.setDefaultButton(QMessageBox::Cancel);
+//            int ret = msgBox.exec();
+//            if (ret == QMessageBox::Cancel)
+//            {
+//                m_prefabMakerPage->setSuccess(false);
+//                return;
+//            }
+//        }
         const bool useArticulation = m_prefabMakerPage->IsUseArticulations();
         m_prefabMaker = AZStd::make_unique<URDFPrefabMaker>(
             m_urdfPath.String(), m_parsedUrdf, prefabPath.String(), m_urdfAssetsMapping, useArticulation);

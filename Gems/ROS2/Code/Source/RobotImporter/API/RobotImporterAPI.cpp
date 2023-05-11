@@ -76,19 +76,99 @@ namespace ROS2
         {
             std::cout << "part 2" << std::endl;
             urdfAssetsMapping = AZStd::make_shared<Utils::UrdfAssetMap>(Utils::FindAssetsForUrdf(meshNames, filePath.String()));
-        }
-
-        for (const AZStd::string& meshPath : meshNames)
-        {
-            if (urdfAssetsMapping->contains(meshPath))
+            for (const AZStd::string& meshPath : meshNames)
             {
-                const auto& asset = urdfAssetsMapping->at(meshPath);
-                bool visual = visualNames.contains(meshPath);
-                bool collider = collidersNames.contains(meshPath);
-                Utils::createSceneManifest(asset.m_availableAssetInfo.m_sourceAssetGlobalPath, collider, visual);
+                if (urdfAssetsMapping->contains(meshPath))
+                {
+                    const auto& asset = urdfAssetsMapping->at(meshPath);
+                    bool visual = visualNames.contains(meshPath);
+                    bool collider = collidersNames.contains(meshPath);
+                    Utils::createSceneManifest(asset.m_availableAssetInfo.m_sourceAssetGlobalPath, collider, visual);
+                }
             }
         }
 
+
+        bool allAssetProcessed = false;
+        do
+        {
+            AZStd::this_thread::sleep_for(AZStd::chrono::milliseconds(300));
+            allAssetProcessed = false;
+            for (const auto& [name, asset] : *urdfAssetsMapping)
+            {
+                auto sourceAssetFullPath = asset.m_availableAssetInfo.m_sourceAssetGlobalPath;
+                if (sourceAssetFullPath.empty()){
+                    AZ_Printf("FooTest", "asset %s is has no sourceAssetFullPath", name.c_str());
+                    continue;
+                }
+                AZ_Printf("FooTest", "checking asset %s", sourceAssetFullPath.c_str());
+                using namespace AzToolsFramework;
+                using namespace AzToolsFramework::AssetSystem;
+                AZ::Outcome<AssetSystem::JobInfoContainer> result = AZ::Failure(); 
+                AssetSystemJobRequestBus::BroadcastResult(
+                    result, &AssetSystemJobRequestBus::Events::GetAssetJobsInfo, sourceAssetFullPath, true);
+                JobInfoContainer& allJobs = result.GetValue();
+                for (const JobInfo& job : allJobs)
+                {
+                    if (job.m_status == JobStatus::Queued || job.m_status == JobStatus::InProgress)
+                    {
+                        AZ_Printf("FooTest", "asset %s is being processed", sourceAssetFullPath.c_str());
+                        allAssetProcessed = true;
+                    }
+                    else{
+                        AZ_Printf("FooTest", "asset %s is done", sourceAssetFullPath.c_str());
+                    }
+                }
+            }
+        }while(allAssetProcessed);
+
+//        for (int i = 0; i < m_assetsUuids.size(); i++)
+//        {
+//            const AZ::Uuid& assetUuid = m_assetsUuids[i];
+//            const AZStd::string& sourceAssetFullPath = m_assetsPaths[i];
+//            if (!m_assetsUuidsFinished.contains(assetUuid))
+//            {
+//                using namespace AzToolsFramework;
+//                using namespace AzToolsFramework::AssetSystem;
+//
+//                AZ::Outcome<AssetSystem::JobInfoContainer> result = AZ::Failure();
+//                AssetSystemJobRequestBus::BroadcastResult(
+//                    result, &AssetSystemJobRequestBus::Events::GetAssetJobsInfo, sourceAssetFullPath, true);
+//                bool allFinished = true;
+//                bool failed = false;
+//                JobInfoContainer& allJobs = result.GetValue();
+//                for (const JobInfo& job : allJobs)
+//                {
+//                    if (job.m_status == JobStatus::Queued || job.m_status == JobStatus::InProgress)
+//                    {
+//                        allFinished = false;
+//                    }
+//                    if (job.m_status == JobStatus::Failed)
+//                    {
+//                        failed = true;
+//                        m_failedCount++;
+//                    }
+//                }
+//                if (allFinished)
+//                {
+//                    if (!failed)
+//                    {
+//                        const AZStd::string productRelPathVisual = Utils::GetModelProductAsset(assetUuid);
+//                        const AZStd::string productRelPathCollider = Utils::GetPhysXMeshProductAsset(assetUuid);
+//                        QString text = QString::fromUtf8(productRelPathVisual.data(), productRelPathVisual.size()) + " " +
+//                            QString::fromUtf8(productRelPathCollider.data(), productRelPathCollider.size());
+//                        m_table->setItem(i, 4, createCell(true, text));
+//                        m_table->item(i, 4)->setIcon(m_okIcon);
+//                    }
+//                    else
+//                    {
+//                        m_table->setItem(i, 4, createCell(false, tr("Failed")));
+//                        m_table->item(i, 4)->setIcon(m_failureIcon);
+//                    }
+//                    m_assetsUuidsFinished.insert(assetUuid);
+//                }
+//            }
+//        }
         // sleep(5);
 
         AZStd::string prefabName = AZStd::string(parsedUrdf->getName().c_str(), parsedUrdf->getName().size()) + ".prefab";

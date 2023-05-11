@@ -44,11 +44,14 @@ namespace ROS2
         QPushButton* m_button;
         QLineEdit* m_textEdit;
         QCheckBox* m_copyFiles;
+        QPushButton* m_testButton;
         void onLoadButtonPressed();
 
         void onFileSelected(const QString& file);
 
         void onTextChanged(const QString& text);
+
+        void onTestButtonPressed();
 
         bool m_fileExists{ false };
     };
