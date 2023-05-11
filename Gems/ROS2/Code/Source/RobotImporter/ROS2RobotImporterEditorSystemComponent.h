@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "Bus/RobotImporterBus.h"
 #include "ROS2RobotImporterSystemComponent.h"
 #include <AzToolsFramework/Entity/EditorEntityContextBus.h>
 
@@ -17,6 +18,7 @@ namespace ROS2
     class ROS2RobotImporterEditorSystemComponent
         : public ROS2RobotImporterSystemComponent
         , private AzToolsFramework::EditorEvents::Bus::Handler
+        , private RobotImporterRequestBus::Handler
     {
     public:
         AZ_COMPONENT(ROS2RobotImporterEditorSystemComponent, "{1cc069d0-72f9-411e-a94b-9159979e5a0c}", ROS2RobotImporterSystemComponent);
@@ -38,6 +40,11 @@ namespace ROS2
         //////////////////////////////////////////////////////////////////////////
         // AzToolsFramework::EditorEvents::Bus::Handler overrides
         void NotifyRegisterViews() override;
+        //////////////////////////////////////////////////////////////////////////
+
+        //////////////////////////////////////////////////////////////////////////
+        // RobotImporterRequestsBus::Handler overrides
+        bool generatePrefabFromFile(const AZStd::string filePath, bool importAssetWithUrdf, bool useArticulation) const override;
         //////////////////////////////////////////////////////////////////////////
     };
 } // namespace ROS2

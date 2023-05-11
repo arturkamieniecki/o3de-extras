@@ -177,7 +177,6 @@ namespace ROS2
     {
         if (m_parsedUrdf && m_assetPage->IsEmpty())
         {
-            std::cout << "dzialam" << std::endl;
             auto collidersNames = Utils::GetMeshesFilenames(m_parsedUrdf->getRoot(), false, true);
             auto visualNames = Utils::GetMeshesFilenames(m_parsedUrdf->getRoot(), true, false);
 

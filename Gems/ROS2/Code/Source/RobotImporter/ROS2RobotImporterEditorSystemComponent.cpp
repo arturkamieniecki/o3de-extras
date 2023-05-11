@@ -7,6 +7,10 @@
  */
 
 #include "ROS2RobotImporterEditorSystemComponent.h"
+#include "API/RobotImporterAPI.h"
+#include "AzCore/std/string/string.h"
+#include "Bus/RobotImporterBus.h"
+#include "RobotImporter/URDF/UrdfParser.h"
 #include "RobotImporterWidget.h"
 #include <AzCore/Serialization/SerializeContext.h>
 #include <AzToolsFramework/API/ViewPaneOptions.h>
@@ -21,6 +25,12 @@ namespace ROS2
         if (auto serializeContext = azrtti_cast<AZ::SerializeContext*>(context))
         {
             serializeContext->Class<ROS2RobotImporterEditorSystemComponent, ROS2RobotImporterSystemComponent>()->Version(0);
+        }
+
+        if (AZ::BehaviorContext* behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+        {
+            behaviorContext->EBus<RobotImporterRequestBus>("Robot Importer Bus")
+                ->Event("Generate prefab from URDF file", &RobotImporterRequestBus::Events::generatePrefabFromFile);
         }
     }
 
@@ -40,10 +50,12 @@ namespace ROS2
     {
         ROS2RobotImporterSystemComponent::Activate();
         AzToolsFramework::EditorEvents::Bus::Handler::BusConnect();
+        RobotImporterRequestBus::Handler::BusConnect();
     }
 
     void ROS2RobotImporterEditorSystemComponent::Deactivate()
     {
+        RobotImporterRequestBus::Handler::BusDisconnect();
         AzToolsFramework::EditorEvents::Bus::Handler::BusDisconnect();
         ROS2RobotImporterSystemComponent::Deactivate();
     }
@@ -61,4 +73,11 @@ namespace ROS2
         options.toolbarIcon = ":/ROS2/ROS_import_icon.svg";
         AzToolsFramework::RegisterViewPane<RobotImporterWidget>("Robot Importer", "ROS2", options);
     }
+
+    bool ROS2RobotImporterEditorSystemComponent::generatePrefabFromFile(
+        const AZStd::string filePath, bool importAssetWithUrdf, bool useArticulation) const
+    {
+        return RobotImporterAPI::generatePrefabFromFile(filePath, importAssetWithUrdf, useArticulation);
+    }
+
 } // namespace ROS2
