@@ -37,6 +37,8 @@
 #include <VehicleDynamics/ModelComponents/SkidSteeringModelComponent.h>
 #include <VehicleDynamics/VehicleModelComponent.h>
 #include <VehicleDynamics/WheelControllerComponent.h>
+#include <Gripper/GripperActionServer.h>
+#include <Gripper/VacuumGripper.h>
 
 namespace ROS2
 {
@@ -84,6 +86,8 @@ namespace ROS2
                     JointsPIDControllerComponent::CreateDescriptor(),
                     JointsTrajectoryComponent::CreateDescriptor(),
                     PidMotorControllerComponent::CreateDescriptor(),
+                    GripperActionServer::CreateDescriptor(),
+                    VacuumGripper::CreateDescriptor(),
                 });
         }
 
