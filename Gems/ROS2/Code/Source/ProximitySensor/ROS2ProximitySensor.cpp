@@ -134,7 +134,7 @@ namespace ROS2
 
             std_msgs::msg::Bool msg;
             m_wasObjectDetected = !result.m_hits.empty();
-            msg.set__data(m_wasObjectDetected);
+            msg.data = m_wasObjectDetected;
             m_detectionPublisher->publish(msg);
         }
     }
