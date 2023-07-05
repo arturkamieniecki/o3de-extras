@@ -12,6 +12,8 @@
 #include <AzCore/Interface/Interface.h>
 #include <AzCore/std/string/string.h>
 #include <ROS2/Manipulation/JointsManipulationRequests.h>
+#include <AzCore/std/string/string.h>
+#include <ROS2/Manipulation/JointInfo.h>
 
 namespace ROS2
 {

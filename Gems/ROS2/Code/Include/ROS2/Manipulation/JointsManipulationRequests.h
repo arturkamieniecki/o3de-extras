@@ -10,6 +10,7 @@
 #include <AzCore/Component/ComponentBus.h>
 #include <AzCore/Component/EntityId.h>
 #include <AzCore/EBus/EBus.h>
+#include <AzCore/Outcome/Outcome.h>
 #include <AzCore/Interface/Interface.h>
 #include <AzCore/std/containers/vector.h>
 #include <AzCore/std/string/string.h>
@@ -26,8 +27,10 @@ namespace ROS2
         using BusIdType = AZ::EntityId;
         static constexpr AZ::EBusAddressPolicy AddressPolicy = AZ::EBusAddressPolicy::ById;
 
+        using JointsPositionsMap = AZStd::unordered_map<AZStd::string, JointPosition>;
+
         //! Get all entity tree joints, including joint or articulation component hierarchy.
-        //! @return A map of joint names to joint info structure.
+        //! @return An unordered map of joint names to joint info structure.
         //! @note Only free joints are returned (no fixed ones).
         virtual ManipulationJoints GetJoints() = 0;
 
@@ -40,14 +43,13 @@ namespace ROS2
 
         //! Return positions of all single DOF joints.
         //! @return a vector of all joints relative positions in degree of motion range or error message.
-        virtual AZStd::vector<JointPosition> GetAllJointsPositions() = 0;
+        virtual JointsPositionsMap GetAllJointsPositions() = 0;
 
         //! Move specified joints into positions.
         //! @param new positions for each named joint. Use names queried through GetJoints().
         //! @return nothing on success, error message on failure.
         //! @note the movement is realized by a specific controller and not instant. The joints will then keep these positions.
-        virtual AZ::Outcome<void, AZStd::string> MoveJointsToPositions(
-            const AZStd::unordered_map<AZStd::string, JointPosition> positions) = 0;
+        virtual AZ::Outcome<void, AZStd::string> MoveJointsToPositions(const JointsPositionsMap& positions) = 0;
 
         //! Move a single joint into desired relative position.
         //! @param jointName name of the joint. Use names acquired from GetJoints() query.
