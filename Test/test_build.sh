@@ -25,6 +25,8 @@ summorizeTests () {
 
 echo "Running test script"
 
+ls
+
 # Test
 . /opt/ros/humble/setup.sh
 
