@@ -7,7 +7,7 @@ command=""
 runTestCommand () {
     sumOfTests=$((sumOfTests+1))
     echo "Running test command: $command"
-    $command
+    eval $command
     if (($? == 0)) ; then
         sumOfSuccesfulTests=$((sumOfSuccesfulTests+1))
     else
