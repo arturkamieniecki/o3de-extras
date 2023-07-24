@@ -25,12 +25,13 @@ summorizeTests () {
 
 echo "Running test script"
 
-ls
-
 # Test
 . /opt/ros/humble/setup.sh
 
 cd /data/workspace/WarehouseTest
+
+command="ls -la"
+runTestCommand
 
 command="""cmake --build build/linux --config profile --target WarehouseTest.GameLauncher Editor"""
 runTestCommand
