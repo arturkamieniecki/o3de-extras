@@ -30,9 +30,6 @@ echo "Running test script"
 
 cd /data/workspace/WarehouseTest
 
-command="ls"
-runTestCommand
-
 command="cmake --build build/linux --config profile --target WarehouseTest.GameLauncher Editor"
 runTestCommand
 
