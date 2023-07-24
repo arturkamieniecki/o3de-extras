@@ -34,7 +34,7 @@ cd /data/workspace/WarehouseTest
 command="ls"
 runTestCommand
 
-command=\"cmake --build build/linux --config profile --target WarehouseTest.GameLauncher Editor"
+command="cmake --build build/linux --config profile --target WarehouseTest.GameLauncher Editor"
 runTestCommand
 
 cd ..
