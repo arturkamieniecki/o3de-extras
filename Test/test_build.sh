@@ -1,5 +1,4 @@
 #!/bin/bash
-cat /tmp/scripts/script.sh
 
 sumOfTests=0
 sumOfSuccesfulTests=0

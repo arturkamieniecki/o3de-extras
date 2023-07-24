@@ -13,10 +13,12 @@
 
 # Paths to ROS rclpy are added directly as pytest is not accessing PYTHONPATH environment variable
 import sys
+import os
 
 sys.path.append('/opt/ros/humble/lib/python3.10/site-packages')
 sys.path.append('/opt/ros/humble/local/lib/python3.10/dist-packages')
 
+os.system(". /opt/ros/humble/setup.sh")
 
 class Tests:
     enter_game_mode = ("Entered game mode", "Failed to enter game mode")
@@ -38,6 +40,7 @@ def check_topics():
 
     def get_topic_list():
         node_dummy = Node("_ros2cli_dummy_to_show_topic_list")
+        # rclpy.spin(node_dummy)
         result = node_dummy.get_topic_names_and_types()
         node_dummy.destroy_node()
         return result
@@ -68,7 +71,7 @@ def SmokeTest_EnterGameModeWorks():
 
     # Open the level called "Warehouse".
     # We use a warehouse level for a smoke test - it already has a robot prefab present
-    helper.open_level(level="Warehouse", directory='')
+    helper.open_level(level="DemoLevel", directory='')
 
     topics_before_game_mode = check_topics()
 
@@ -77,13 +80,16 @@ def SmokeTest_EnterGameModeWorks():
 
     # The script drives the execution of the test, to return the flow back to the editor,
     # we will tick it one time
-    general.idle_wait_frames(1)
+    general.idle_wait_frames(1000)
 
     # Now we can use the Report.result() to report the state of a result
     # if the second argument is false, it will mark this test as failed, however it will keep going.
     Report.result(Tests.enter_game_mode, general.is_in_game_mode())
 
     topics_in_game_mode = check_topics()
+    print("HERE\n\n\n\n\n\n\n\n\n\n\n\n")
+    print(topics_before_game_mode)
+    print(topics_in_game_mode)
 
     Report.result(Tests.topics_published, len(topics_in_game_mode) > len(topics_before_game_mode))
 
@@ -93,6 +99,7 @@ def SmokeTest_EnterGameModeWorks():
 
     # The test will end at this point, is good practice to exit game mode or reset any changed stated
     # *DO NOT* close the editor, the editor will close automatically and report the error code
+    general.idle_wait_frames(1000)
     general.exit_game_mode()
 
     # this line is needed to update the simulation state
