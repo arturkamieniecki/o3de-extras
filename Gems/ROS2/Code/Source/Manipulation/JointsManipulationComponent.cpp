@@ -12,6 +12,7 @@
 #include "JointStatePublisher.h"
 #include <AzCore/Component/ComponentApplicationBus.h>
 #include <AzCore/Component/TransformBus.h>
+#include <AzCore/Debug/Trace.h>
 #include <AzCore/Serialization/EditContext.h>
 #include <ROS2/Frame/ROS2FrameComponent.h>
 #include <ROS2/Manipulation/Controllers/JointsPositionControllerRequests.h>
@@ -339,6 +340,27 @@ namespace ROS2
         return efforts;
     }
 
+    AZ::Outcome<void, AZStd::string> JointsManipulationComponent::SetMaxJointEffort(const AZStd::string& jointName, JointEffort maxEffort)
+    {
+        if (!m_manipulationJoints.contains(jointName))
+        {
+            return AZ::Failure(AZStd::string::format("Joint %s does not exist", jointName.c_str()));
+        }
+
+        auto jointInfo = m_manipulationJoints.at(jointName);
+
+        if (jointInfo.m_isArticulation)
+        {
+            PhysX::ArticulationJointRequestBus::Event(
+                jointInfo.m_entityComponentIdPair.GetEntityId(),
+                &PhysX::ArticulationJointRequests::SetMaxForce,
+                jointInfo.m_axis,
+                maxEffort);
+        }
+
+        return AZ::Success();
+    }
+
     AZ::Outcome<void, AZStd::string> JointsManipulationComponent::MoveJointToPosition(
         const AZStd::string& jointName, JointPosition position)
     {
@@ -422,7 +444,8 @@ namespace ROS2
     void JointsManipulationComponent::Stop()
     {
         for (auto& [jointName, jointInfo] : m_manipulationJoints)
-        { // Set all target joint positions to their current positions.
+        { // Set all target joint positions to their current positions. There is no need to check if the outcome is successful, because
+          // jointName is always valid.
             jointInfo.m_restPosition = GetJointPosition(jointName).GetValue();
         }
     }

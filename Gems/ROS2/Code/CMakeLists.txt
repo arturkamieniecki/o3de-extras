@@ -37,7 +37,7 @@ endif()
 
 # Add a custom target to always check during build if sourced and cached distributions match.
 add_custom_target(
-    ROS2DistributionCheck ALL 
+    ROS2DistributionCheck ALL
     COMMENT "Checking if sourced ROS 2 distribution matches with the configuration"
     COMMAND ${CMAKE_COMMAND} -DROS_DISTRO=${ROS_DISTRO} -P ${CMAKE_CURRENT_SOURCE_DIR}/checkROS2Distribution.cmake
 )
@@ -64,6 +64,7 @@ ly_add_target(
             Gem::Atom_RPI.Public
             Gem::Atom_Feature_Common.Static
             Gem::Atom_Component_DebugCamera.Static
+            Gem::AtomLyIntegration_CommonFeatures.Static
             Gem::StartingPointInput
             Gem::PhysX.Static
             Gem::LmbrCentral.API
@@ -136,7 +137,8 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::${gem_name}.Static
             PRIVATE
                 AZ::AssetBuilderSDK
-        )
+                3rdParty::sdformat
+    )
 
     find_package(urdfdom)
     target_link_libraries(${gem_name}.Editor.Static PUBLIC urdfdom::urdfdom_model)
@@ -163,8 +165,8 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     # By default, we will specify that the above target ROS2 would be used by
-    # Tool and Builder type targets when this gem is enabled.  If you don't want it
-    # active in Tools or Builders by default, delete one of both of the following lines:
+    # Tool and Builder type targets when this gem is enabled. If you don't want it
+    # active in Tools or Builders by default, delete one or both of the following lines:
     ly_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
     ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
 endif()
@@ -216,6 +218,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                     PRIVATE
                         AZ::AzTest
                         Gem::${gem_name}.Editor
+                        3rdParty::sdformat
             )
 
             # Add ROS2.Editor.Tests to googletest

@@ -11,7 +11,10 @@
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzCore/Module/Module.h>
 #include <Camera/ROS2CameraSensorComponent.h>
+#include <ContactSensor/ROS2ContactSensorComponent.h>
+#include <FactorySimulation/ConveyorBeltComponent.h>
 #include <GNSS/ROS2GNSSSensorComponent.h>
+#include <Gripper/FingerGripperComponent.h>
 #include <Gripper/GripperActionServerComponent.h>
 #include <Gripper/VacuumGripperComponent.h>
 #include <Imu/ROS2ImuSensorComponent.h>
@@ -90,6 +93,9 @@ namespace ROS2
                     ROS2ProximitySensor::CreateDescriptor(),
                     GripperActionServerComponent::CreateDescriptor(),
                     VacuumGripperComponent::CreateDescriptor(),
+                    ConveyorBeltComponent::CreateDescriptor(),
+                    FingerGripperComponent::CreateDescriptor(),
+                    ROS2ContactSensorComponent::CreateDescriptor()
                 });
         }
 
