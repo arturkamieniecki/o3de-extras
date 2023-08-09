@@ -3,7 +3,7 @@ name: TEST - Build with O3DE Extras
 on:
   push:
     branches:
-      - main development
+      - main development actions
   pull_request:
     branches:
       - '*'
