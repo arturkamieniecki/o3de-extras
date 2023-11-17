@@ -120,6 +120,25 @@ namespace ROS2
             return;
         }
 
+        auto& spawnable = m_controller.GetSpawnables().find(spawnableName)->second;
+        if (spawnable->IsLoading())
+        {
+            // This check is done during the simulation. All assets in the build of the simulation are loaded and processed.
+            // This will only run when the simulation is started before all assets are processed.
+            response.success = false;
+            response.status_message = "Asset for spawnable " + request->name + " has not yet loaded.";
+            service_handle->send_response(*header, response);
+            return;
+        }
+
+        if (spawnable->IsError())
+        {
+            response.success = false;
+            response.status_message = "Spawnable loaded with an error";
+            service_handle->send_response(*header, response);
+            return;
+        }
+
         if (!m_tickets.contains(spawnableName))
         {
             // if a ticket for this spawnable was not created but the spawnable name is correct, create the ticket and then use it to
