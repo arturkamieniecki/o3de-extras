@@ -134,7 +134,7 @@ namespace ROS2
         if (spawnable->IsError())
         {
             response.success = false;
-            response.status_message = "Spawnable loaded with an error";
+            response.status_message = "Spawnable " + request->name + " loaded with an error";
             service_handle->send_response(*header, response);
             return;
         }
