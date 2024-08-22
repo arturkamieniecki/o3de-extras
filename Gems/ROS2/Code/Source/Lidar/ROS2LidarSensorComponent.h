@@ -9,12 +9,15 @@
 
 #include <Atom/RPI.Public/AuxGeom/AuxGeomDraw.h>
 #include <AzCore/Serialization/SerializeContext.h>
+#include <ROS2/Communication/TopicConfiguration.h>
 #include <ROS2/Lidar/LidarRegistrarBus.h>
 #include <ROS2/Lidar/LidarSystemBus.h>
 #include <ROS2/Sensor/Events/TickBasedSource.h>
 #include <ROS2/Sensor/ROS2SensorComponentBase.h>
 #include <rclcpp/publisher.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
+#include <std_msgs/msg/detail/string__struct.hpp>
+#include <std_msgs/msg/string.hpp>
 
 #include "LidarCore.h"
 #include "LidarRaycaster.h"
@@ -45,11 +48,23 @@ namespace ROS2
         //////////////////////////////////////////////////////////////////////////
         void FrequencyTick();
 
+        // Deactivates and reactivates the component to apply changes loaded using JsonSerialization.
+        void SetConfigurationFormJsonString(AZStd::string configString);
+
+        // Publishes the current configuration to the topic.
+        void PublishConfiguration();
+
         bool m_canRaycasterPublish = false;
         std::shared_ptr<rclcpp::Publisher<sensor_msgs::msg::PointCloud2>> m_pointCloudPublisher;
 
         LidarCore m_lidarCore;
 
         LidarId m_lidarRaycasterId;
+
+        ROS2::TopicConfiguration m_parametersConfigurationTopic;
+        rclcpp::Subscription<std_msgs::msg::String>::SharedPtr m_parametersConfigurationTopicSubscription;
+
+        ROS2::TopicConfiguration m_parametersGetConfigurationTopic;
+        rclcpp::Publisher<std_msgs::msg::String>::SharedPtr m_parametersGetConfigurationTopicPublisher;
     };
 } // namespace ROS2
